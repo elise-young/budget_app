@@ -12,7 +12,7 @@ from sqlalchemy import desc, asc
 from . import models, schemas, utils, budgeter
 from .database import engine, get_db
 from datetime import date
-from .routers import transaction, category, budget, user
+from .routers import transaction, category, budget, user, account
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -22,7 +22,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "localhost:3000"
-]
+] 
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,9 +47,11 @@ while True:
 
 
 app.include_router(transaction.router)
+app.include_router(account.router)
 app.include_router(category.router)
 app.include_router(budget.router)
 app.include_router(user.router)
+
 
 @app.get("/")
 async def root():

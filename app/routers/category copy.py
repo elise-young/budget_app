@@ -19,7 +19,7 @@ def getCategories(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Category)
-def addCategory(category: schemas.CategoryBase, db: Session = Depends(get_db)): 
+def addCategory(category: schemas.Category, db: Session = Depends(get_db)): 
      
     new_category = models.Categories(**category.dict())
     db.add(new_category)
@@ -27,17 +27,3 @@ def addCategory(category: schemas.CategoryBase, db: Session = Depends(get_db)):
     db.refresh(new_category)
 
     return new_category
-
-@router.put("/{id}", response_model=schemas.Category)
-def updateCategory(id : int, updated_category : schemas.CategoryUpdate, db: Session = Depends(get_db)):
-    category_query = db.query(models.Categories).filter(models.Categories.id == id)
-    category = category_query.first()
-
-    if category == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"category with id {id} does not exist")
-    
-    category_query.update(updated_category.dict(), synchronize_session=False)
-    db.commit()
-    db.refresh(category)
-    return category_query.first()

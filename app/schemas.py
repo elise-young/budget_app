@@ -12,8 +12,8 @@ class TransactionBase(BaseModel):
     outflow: int = 0
     inflow: int = 0
     payee: str    
-    accountstr: str 
-    categorystr: str = 'uncategorized'
+    accountid: int
+    categoryid: Optional[int]
     memo: Optional[str] = None
     cleared: bool = False
     reconciled: bool = False
@@ -30,14 +30,44 @@ class Transaction(TransactionBase):
     # class Config:
     #     orm_mode=True
 
-class Category(BaseModel):
-    name: str
-    section: str = 'none'
-    order: int
-    id: int
+
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str]
+    section: Optional[str] = 'none'
+    order: Optional[int]
 
     class Config:
         orm_mode=True
+
+class CategoryBase(BaseModel):
+    name: str
+    section: str = 'none'
+    order: int
+
+    class Config:
+        orm_mode=True
+
+class Category(CategoryBase):
+    id: int
+
+
+
+class AccountBase(BaseModel):
+    name: str
+    visible: bool = True
+    group: str
+
+    class Config:
+        orm_mode=True
+
+class Account(AccountBase):
+    id: int
+
+class AccountUpdate(BaseModel):
+    name: Optional[str]
+    visible: Optional[bool]
+    group: Optional[bool]
 
 class Section(BaseModel):
     name: str
@@ -45,10 +75,11 @@ class Section(BaseModel):
 
 class Budgeted(BaseModel):
     assigned: int
+    yearmonth: Optional[int]
+    categoryid: Optional[int]
 
     class Config:
         orm_mode=True
-
 
 class UserCreate(BaseModel):
     email: EmailStr

@@ -19,6 +19,32 @@ def getTransactions(db: Session = Depends(get_db)):
 
     return transactions
 
+@router.get("/{id}", response_model=schemas.Transaction)
+def getTransactionByID(id: int, db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM transactions WHERE id= %s """, (str(id)))
+    # transaction = cursor.fetchone()
+    
+    transaction = db.query(models.Transactions).filter(models.Transactions.id == id).first()
+    
+    if not transaction:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"transaction with id {id} does not exist")
+    
+    return transaction
+
+@router.get("/{accountid}", response_model=List[schemas.Transaction])
+def getTransactionsByAccount(accountid: int, db: Session = Depends(get_db)):
+
+    transactions = db.query(models.Transactions).filter(models.Transactions.accountid == accountid).all()
+
+    return transactions
+
+@router.get("/{categoryid}", response_model=List[schemas.Transaction])
+def getTransactionsByCategory(categoryid: int, db: Session = Depends(get_db)):
+
+    transactions = db.query(models.Transactions).filter(models.Transactions.categoryid == categoryid).all()
+
+    return transactions
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.TransactionCreate)
 def addTransaction(transaction: schemas.TransactionCreate, db: Session = Depends(get_db)):
@@ -34,18 +60,7 @@ def addTransaction(transaction: schemas.TransactionCreate, db: Session = Depends
 
     return new_transaction
 
-@router.get("/{id}", response_model=schemas.Transaction)
-def getTransactionByID(id: int, db: Session = Depends(get_db)):
-    # cursor.execute("""SELECT * FROM transactions WHERE id= %s """, (str(id)))
-    # transaction = cursor.fetchone()
-    
-    transaction = db.query(models.Transactions).filter(models.Transactions.id == id).first()
-    
-    if not transaction:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"transaction with id {id} does not exist")
-    
-    return transaction
+
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def deleteTransaction(id: int, db: Session = Depends(get_db)):

@@ -10,8 +10,8 @@ class Transactions(Base):
     inflow = Column(Integer)
     outflow = Column(Integer)
     payee = Column(String)
-    accountstr = Column(String)
-    categorystr = Column(String)
+    accountid = Column(Integer, ForeignKey("accounts.id", ondelete="CASCADE")) 
+    categoryid = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
     memo = Column(String)
     cleared = Column(Boolean, server_default='False')
     flagstr = Column(String)
@@ -23,6 +23,13 @@ class Categories(Base):
     name = Column(String, nullable=False)
     section = Column(String)
     order = Column(Integer)
+
+class Accounts(Base):
+    __tablename__ = "accounts"
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String, nullable=False)
+    visible = Column(Boolean, server_default='True')
+    group = Column(String)
 
 class Sections(Base):
     __tablename__ = "sections"
